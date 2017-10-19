@@ -1,0 +1,65 @@
+extends layout 
+
+block content
+  h1 Edit Book Details: "#{title}"
+  |     
+  form(action="/book_detail/" + id + "?_method=PUT", method="post")
+    p
+      label(for='title') Title:
+      input#title(type='text', value= title, name='title')
+    |         
+    p
+      label(for='author') Author:
+      input#author(type='text', value= author, name='author')
+    |         
+    p
+      label(for='genre') Genre: 
+      input#genre(type='text', value= genre, name='genre')
+    |         
+    p
+      label(for='first_published') First Published:
+      input#first_published(type='text', value= first_published, name='first_published')
+    |         
+    p
+      input(type='submit', value='Update')
+  |
+  if(loans !== null)     
+    h2 Loan History
+    |     
+    table
+      thead
+        tr
+          th Book
+          |                 
+          th Patron 
+          |                 
+          th Loaned on
+          |                 
+          th Return by 
+          |                 
+          th Returned on
+          |                 
+          th Action
+      |    
+      tbody
+      - var href = '/return_book/' + id
+      - var hrefBook = '/book_detail/' + id
+      - var hrefPatron = '/patron_detail/' + loans.Patron.id
+          tr
+            td
+              a(href=hrefBook)= title
+            |                 
+            td
+              a(href= hrefPatron)= loans.Patron.first_name + " " + loans.Patron.last_name
+            |                 
+            td= loans.loaned_on
+            |                 
+            td= loans.return_by
+            |                 
+            td= loans.returned_on
+            |
+            if(loans.returned_on !== null)                 
+              td Returned
+            else
+              td
+                a.button(href=href) Return Book

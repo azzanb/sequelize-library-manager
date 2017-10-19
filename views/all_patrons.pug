@@ -1,0 +1,26 @@
+extends layout
+
+block content
+  h1 Patrons     
+  p
+    a.button(href='/patrons/new') Create New Patron
+       
+  table
+    thead
+      tr
+        th Name                  
+        th Address                 
+        th Email                 
+        th Library ID                 
+        th Zip         
+    tbody
+    - for(let i = 0; i < patrons.length; i++)
+      - var href = '/patron_detail/' + patrons[i].id
+          tr
+            td
+              a(href=href)= patrons[i].first_name + " " + patrons[i].last_name                 
+            td= patrons[i].address                
+            td= patrons[i].email                 
+            td= patrons[i].library_id                
+            td= patrons[i].zip_code             
+      

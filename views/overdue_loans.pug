@@ -1,0 +1,22 @@
+extends layout
+
+block content
+  h1 Overdue Loans
+  include ./partials/book_nav.pug    
+    table
+      thead
+        tr
+          th Book
+          |                 
+          th Patron 
+          |                 
+          th Loaned on
+          |                 
+          th Return by 
+          |                 
+          th Returned on
+          |                 
+          th Action
+      |         
+      tbody
+        include ./partials/loans_nav.pug  

@@ -1,0 +1,41 @@
+extends layout 
+
+block content
+
+  h1 Overdue Books
+  |     
+  p
+    a.button(href='new_book.html') Create New Book
+  |     
+  p
+    | Filters 
+    a(href='/allBooks') All 
+    |  | 
+    a(href='/books?filter=overdue') Overdue 
+    |  | 
+    a(href='/books?filter=checked_out') Checked Out
+  |     
+  table
+    thead
+      tr
+        th Title
+                 
+        th Author
+                 
+        th Genre
+                 
+        th Year Released
+         
+    tbody
+    - for(let i = 0; i < loans.length; i++)
+      - var hrefBook = "/book_detail/" + loans[i].Book.id
+          tr
+            td
+              a(href= hrefBook)= loans[i].Book.title
+                     
+            td= loans[i].Book.author
+                     
+            td= loans[i].Book.genre
+                     
+            td= loans[i].Book.first_published           
+      

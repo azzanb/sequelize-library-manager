@@ -1,0 +1,22 @@
+- for(let i = 0; i < loans.length; i++)
+  - var href = "/return_book/" + loans[i].Book.id
+  - var hrefBook = "/book_detail/" + loans[i].Book.id
+  - var hrefPatron = "/patron_detail/" + loans[i].Patron.id
+      tr
+        td
+          a(href=hrefBook)= loans[i].Book.title
+        |                 
+        td
+          a(href= hrefPatron)= loans[i].Patron.first_name + " " + loans[i].Patron.last_name
+        |                 
+        td= loans[i].loaned_on
+        |                 
+        td= loans[i].return_by
+        |                 
+        td= loans[i].returned_on
+        |                 
+        if(loans[i].returned_on !== null)                 
+          td Returned
+        else
+          td
+            a.button(href=href) Return Book

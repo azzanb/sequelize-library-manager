@@ -1,0 +1,29 @@
+extends layout
+
+block content
+
+  h1 Patron: #{loans.Patron.first_name + " " + loans.Patron.last_name}
+  |     
+  p
+    strong Book Title: 
+    | #{loans.Book.title}
+  |     
+  p
+    strong Loaned By: 
+    | #{loans.Patron.first_name + " " + loans.Patron.last_name}
+  |     
+  p
+    strong Loaned On: 
+    | #{loans.loaned_on}
+  |     
+  p
+    strong Return By: 
+    | #{loans.return_by}
+  |     
+  form(method='post', action='/return_book/' + loans.Book.id + "?_method=PUT")
+    p
+      label(for='returned_on') Returned on:
+      input#returned_on(name='returned_on' type='text', value= returned_on)
+    |         
+    p
+      input(type='submit', value='Return Book')

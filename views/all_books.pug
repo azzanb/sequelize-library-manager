@@ -1,0 +1,42 @@
+extends layout
+
+block content
+
+  h1 Books
+     
+  p
+    a.button(href='/newBook') Create New Book
+     
+  p
+    | Filters 
+    a(href='/allBooks') All 
+    | | 
+    a(href='/books?filter=overdue') Overdue 
+    | | 
+    a(href='/books?filter=checked_out') Checked Out 
+  
+  table
+    thead
+      tr
+        th Title
+                 
+        th Author
+                
+        th Genre
+                 
+        th Year Released
+        
+    tbody
+
+    block books
+    - for(let i = 0; i < books.length; i++)
+      - var href = "/book_detail/" + books[i].id
+          tr
+            td
+              a(href=href)= books[i].title
+
+            td= books[i].author
+
+            td= books[i].genre
+
+            td= books[i].first_published
