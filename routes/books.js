@@ -18,7 +18,7 @@ Loans.belongsTo(Books, {foreignKey: 'book_id'});
 Loans.belongsTo(Patrons, {foreignKey: 'patron_id'});
 
 //-- GET Home --//
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res) {
   res.render('home');
 });
 
@@ -26,14 +26,14 @@ router.get('/', function(req, res, next) {
 
 
 //-- GET all books --//
-router.get('/allBooks', function(req, res, next) {
+router.get('/allBooks', function(req, res) {
 	Books.findAll().then(books => {
 		res.render('all_books', {books: books});
 	})
 });
 
 //-- GET overdue or checked books --//
-router.get('/books', function(req, res, next) {
+router.get('/books', function(req, res) {
 	if(req.query.filter === "overdue"){
 		Loans.findAll({
 			where: {
@@ -68,7 +68,7 @@ router.get('/books', function(req, res, next) {
 });
 
 //-- GET new books --//
-router.get('/newBook', function(req, res, next) {
+router.get('/newBook', function(req, res) {
 	res.render('new_book', {book: Books.build()});
 });
 
@@ -76,16 +76,19 @@ router.get('/newBook', function(req, res, next) {
 router.post('/newBook', function(req, res) {
 	Books.create(req.body).then(function(){
 		res.redirect('/allBooks');
-	}).catch(function(err){
-		console.log(err.message)
-		if(err.name === "SequelizeValidationError"){
-			res.render('bookError');
-		} else throw error;
+	}).catch((err) => {
+		console.log(err.errors[0].path)
+		if(err){
+			res.render('new_book', {
+				errors: err.errors,
+				book: Books.build()		
+			});
+		}
 	});
 });
 
 //-- GET book by id --//
-router.get('/book_detail/:id', function(req, res, next){
+router.get('/book_detail/:id', function(req, res){
 	Books.findById(req.params.id).then(function(book){
 		return book;
 	}).then(function(book){
@@ -108,24 +111,46 @@ router.get('/book_detail/:id', function(req, res, next){
 	});
 });
 
-router.put('/book_detail/:id', function(req, res, next){
-	Books.findById(req.params.id).then(function(book){
-		return book;		
-	}).then(function(book){
-		book.update(req.body);
-	}).then(function(){
+router.put('/book_detail/:id', function(req, res){
+	Books.update(req.body, {
+		where: [{id: req.params.id}]
+	}).then(() => {
 		res.redirect('/allBooks');
+	}).catch((err) => {
+		if(err){
+			Books.findById(req.params.id).then(function(book){
+				return book;
+			}).then(function(book){
+			//connect the chosen book's id with the loan's id
+			Loans.findOne({
+				include: [{
+					model: Patrons
+				}],
+				where:{book_id: book.id}
+			}).then(function(loans){
+				res.render('book_detail', {
+					errors: err.errors,
+					title: book.title,
+					author: book.author,
+					genre: book.genre,
+					first_published: book.first_published,
+					id: book.id,
+					loans:loans
+				});
+			});
+		});
+		} else throw err;
 	});
 });
 
-router.get('/return_book/:id', function(req,res,next) {
+router.get('/return_book/:id', function(req,res) {
 	Books.findById(req.params.id).then(function(book){
 		return book;
 	}).then(function(book){
 		//connect the chosen book's id with the loan's id
 		Loans.findOne({
 			where: {
-				book_id: book.id
+				book_id: req.params.id
 			},
 			include: [{
 				model: Books
@@ -143,38 +168,45 @@ router.get('/return_book/:id', function(req,res,next) {
 	})
 });
 
-router.put('/return_book/:id', function(req, res, next){
+router.put('/return_book/:id', function(req, res){
 	Books.findById(req.params.id).then(function(book){
 		return book;
 	}).then(function(book){
-		//connect the chosen book's id with the loan's id
+	Loans.update(req.body, {
+		where: {
+			book_id: req.params.id
+		},
+		include: [{
+			model: Books
+		},{
+			model: Patrons
+		}]
+	}).then((loans) => {
+		res.redirect('/allLoans');
+	}).catch(err => {
+		console.log(err)
 		Loans.findOne({
 			where: {
-				book_id: book.id
+				book_id: req.params.id
 			},
 			include: [{
 				model: Books
 			},{
 				model: Patrons
 			}]
-		}).then(function(loans){
-			return loans
-		}).then(function(loans){
-			loans.update(req.body);
-		}).then(function(){
-			res.redirect('/allLoans')
-		})
-	})
+		}).then((loans) => {
+			res.render('return_book', {
+				error: "Returned On must be filled! (YYYY-MM-DD)",
+				loans: loans,
+				returned_on: today
+			});
+		});
+	});
+});
+	
 });
 
 module.exports = router;
-
-
-
-/* TODO */
-//Cannot update (PUT) book!!
-//Check project requirement Validations!!
-//If the book has no patron, return error page
 
 
 

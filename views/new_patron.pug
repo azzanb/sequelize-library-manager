@@ -4,6 +4,10 @@ block content
   h1 New Patron
   
   form(method='post', action='/patrons/new')
+    if errors
+      ul
+        each error in errors
+          li= error.path + " must be filled!"
     p
       label(for='first_name') First Name
       input#first_name(type='text' name='first_name')

@@ -26,8 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     email: {
       type: DataTypes.STRING,
       validate: {
-        notEmpty: true,
-        isEmail: true
+        notEmpty: true
       }
     },
     library_id: {

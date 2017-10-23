@@ -11,18 +11,21 @@ module.exports = (sequelize, DataTypes) => {
     loaned_on: {
       type: DataTypes.DATEONLY,
       validate: {
-        notEmpty: true,
-        isDate: true
+        notEmpty: true
       }
     },
     return_by: {
       type: DataTypes.DATEONLY,
       validate: {
-        notEmpty: true,
-        isDate: true
+        notEmpty: true
       }
     },
-    returned_on: DataTypes.DATEONLY
+    returned_on: {
+      type: DataTypes.DATEONLY,
+      validate: {
+        notEmpty: true
+      }
+    }
   }, {
     classMethods: {
       associate: function(models) {

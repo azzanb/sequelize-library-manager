@@ -5,6 +5,10 @@ block content
   h1 Patron: #{patron.first_name + " " + patron.last_name}
   |     
   form(action="/patron_detail/" + patron.id + "?_method=PUT", method="post")
+    if errors
+      ul
+        each error in errors
+          li= error.path + " must be filled!"
     p
       label(for='first_name') First Name
       input#first_name(type='text', value= patron.first_name, name='first_name')

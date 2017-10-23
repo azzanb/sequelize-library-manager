@@ -5,6 +5,11 @@ block content
   h1 New Loan
   |     
   form(action='/newLoan' method='post')
+    if errors
+      ul 
+        each error in errors
+          li= error.path + " must be filled! (YYYY-MM-DD)"
+  
     p
       label(for='book_id') Book
       select#book_id(type='select', name='book_id')

@@ -1,8 +1,9 @@
 extends layout
 
 block content
-
   h1 Patron: #{loans.Patron.first_name + " " + loans.Patron.last_name}
+  if error
+    p= error
   |     
   p
     strong Book Title: 

@@ -22,6 +22,7 @@ router.get('/', function(req, res, next) {
   res.render('home');
 });
 
+//GET all loans
 router.get('/allLoans', function(req, res, next) {
 	Loans.findAll({ 
 		include: [{
@@ -38,7 +39,7 @@ router.get('/allLoans', function(req, res, next) {
 	
 });
 
-
+//Route to page to create a new loan
 router.get('/newLoan', function(req, res, next) {
 	Books.findAll().then(books => {
 		return books;
@@ -56,16 +57,33 @@ router.get('/newLoan', function(req, res, next) {
 	});
 });
 
+//POST a new loan
 router.post('/newLoan', function(req,res,next){
 	Loans.create(req.body).then(function(){
 		res.redirect('/allLoans');
 	}).catch(err => {
 		if(err.name === "SequelizeValidationError"){
-			res.render('loanError');
+			Books.findAll().then(books => {
+				return books;
+			}).then(books => {
+				Patrons.findAll().then(patrons => {
+					return patrons
+				}).then(patrons => {
+					console.log(err.errors[0]);
+					res.render('new_loan', {
+						errors: err.errors,
+						books: books,
+						patrons: patrons,
+						loaned_on: today,
+						return_by: sevenDaysLater
+					});
+				});
+			});
 		}	
 	});
 });
 
+//Route to page that lists all overdue loans
 router.get('/overdueLoans', function(req, res, next) {
 	Loans.findAll({ 
 		where: {
@@ -86,6 +104,7 @@ router.get('/overdueLoans', function(req, res, next) {
 	});
 });
 
+//Route to page that lists all checked out loans
 router.get('/checkedLoans', function(req, res, next) {
 	Loans.findAll({ 
 		where: {

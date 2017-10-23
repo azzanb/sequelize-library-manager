@@ -43,7 +43,9 @@ router.post('/patrons/new', function(req,res,next){
 	}).catch(function(err){
 		console.log(err);
 		if(err.name === "SequelizeValidationError"){
-			res.render('patronError');
+			res.render('new_patron', {
+				errors: err.errors
+			});
 		} else throw error;
 		console.log(err)
 	});
@@ -72,17 +74,36 @@ router.get('/patron_detail/:id', function(req, res, next){
 });
 
 router.put('/patron_detail/:id', function(req, res, next){
-	Patrons.findOne({
+	Patrons.update(req.body, {
 		where: {
 			id: req.params.id
 		}
-	}).then(function(patron){
-		return patron;
-	}).then(function(loans){
-		loans.update(req.body);
 	}).then(function(){
 		res.redirect('/allPatrons');
-	});
+	}).catch(err => {
+		if(err){
+			Patrons.findOne({
+				where: {
+					id: req.params.id
+				}
+			}).then(function(patron){
+				Loans.findAll({
+					where: {
+						patron_id: patron.id, 
+					},
+					include: [{
+						model: Books
+					}]
+				}).then(function(loans){
+					res.render('patron_detail', {
+						errors: err.errors,
+						patron: patron,
+						loans: loans
+					});
+				})
+			})
+		}
+	})
 });
 
 module.exports = router;

@@ -4,6 +4,10 @@ block content
   h1 Edit Book Details: "#{title}"
   |     
   form(action="/book_detail/" + id + "?_method=PUT", method="post")
+    if errors
+      ul
+        each error in errors
+          li= error.path + " must be filled!"
     p
       label(for='title') Title:
       input#title(type='text', value= title, name='title')

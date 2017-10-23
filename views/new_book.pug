@@ -5,6 +5,10 @@ block content
   h1 New Book
   |     
   form(method="post" action="/newBook")
+    if errors
+      ul
+        each error in errors
+          li= error.path + " must be filled!"
     p
       label(for='title') Title
       input#title(type='text' name='title' value= title error)
